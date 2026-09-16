@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Digitale Lizenzprüfung — Bundesamt für Fahrzeugästhetik</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚗</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-1:#e9f8f3;
+    --bg-2:#bfe7dd;
+    --teal-deep:#0d514c;
+    --teal-mid:#127e73;
+    --teal-line:#1c9a8c;
+    --ink:#0a2b27;
+    --paper:#fbfdfb;
+    --paper-line:#d7ebe4;
+    --gold:#a9822f;
+    --warn-bg:#fbf3ea;
+    --warn-line:#c98a3f;
+    --warn-ink:#6b4318;
+    --note-bg:#fff3e0;
+    --note-ink:#3a2a10;
+    --ok:#1c8a5a;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg-1);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .page{max-width:720px;margin:0 auto;padding:0 0 64px;}
+
+  /* ---------- Letterhead / Hero ---------- */
+  header.letterhead{
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(160deg,var(--teal-deep),var(--teal-mid) 55%,var(--teal-line));
+    color:#eafcf6;
+    padding:44px 28px 40px;
+    text-align:center;
+    isolation:isolate;
+  }
+  header.letterhead::before{
+    content:"";
+    position:absolute;inset:0;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.055) 0 2px, transparent 2px 46px),
+      repeating-linear-gradient(115deg, rgba(255,255,255,0.09) 0 3px, transparent 3px 90px);
+    z-index:-1;
+  }
+  .agency-mark{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    opacity:.85;
+    margin-bottom:14px;
+  }
+  header.letterhead h1{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:clamp(28px,6vw,38px);
+    line-height:1.12;
+    margin:0 0 10px;
+  }
+  header.letterhead p.sub{
+    margin:0;
+    font-size:14.5px;
+    max-width:38ch;
+    margin-inline:auto;
+    opacity:.92;
+  }
+  .lp-tag{
+    display:inline-block;
+    margin-top:22px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.1em;
+    border:1px solid rgba(255,255,255,.5);
+    padding:6px 14px;
+    border-radius:2px;
+  }
+
+  main{padding:0 20px;}
+
+  section{margin-top:26px;}
+
+  /* ---------- Status card ---------- */
+  .status-card{
+    position:relative;
+    background:var(--paper);
+    border:1px solid var(--paper-line);
+    border-radius:4px;
+    padding:26px 26px 22px;
+    margin-top:-26px;
+    box-shadow:0 18px 40px -22px rgba(10,43,39,.35);
+  }
+  .seal{
+    position:absolute;
+    top:-20px;right:20px;
+    width:64px;height:64px;
+    border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #e9d8a6, var(--gold));
+    border:2px solid #8a6a22;
+    display:flex;align-items:center;justify-content:center;
+    text-align:center;
+    color:#3a2c08;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:9.5px;
+    line-height:1.15;
+    letter-spacing:.03em;
+    transform:rotate(9deg);
+    box-shadow:0 6px 14px -6px rgba(0,0,0,.4);
+  }
+  .status-line{
+    display:flex;align-items:center;gap:9px;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:15px;
+    color:var(--ok);
+    margin-bottom:18px;
+  }
+  .status-dot{width:9px;height:9px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 4px rgba(28,138,90,.15);}
+  .facts{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px 20px;
+  }
+  .facts .full{grid-column:1 / -1;}
+  .facts dt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:.08em;
+    color:var(--teal-mid);
+    margin:0 0 3px;
+  }
+  .facts dd{margin:0;font-weight:500;font-size:15px;}
+  @media (max-width:420px){ .facts{grid-template-columns:1fr;} }
+
+  /* ---------- Decree ---------- */
+  .decree{
+    background:var(--paper);
+    border:1px solid var(--paper-line);
+    border-radius:4px;
+    padding:26px;
+  }
+  h2{
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:20px;
+    margin:0 0 12px;
+  }
+  .decree p.lead{margin:0 0 16px;color:#1e433e;}
+  ul.checklist{list-style:none;margin:0 0 18px;padding:0;display:grid;gap:9px;}
+  ul.checklist li{
+    display:flex;gap:10px;align-items:flex-start;
+    font-size:15px;
+  }
+  ul.checklist li::before{
+    content:"✓";
+    color:var(--ok);
+    font-weight:600;
+    flex:0 0 auto;
+  }
+  .authority{
+    border-top:1px dashed var(--paper-line);
+    padding-top:16px;
+    font-size:14.5px;
+  }
+  .authority .role{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.06em;
+    color:var(--teal-mid);
+    display:block;
+    margin-top:2px;
+  }
+
+  /* ---------- Warning box ---------- */
+  .warning-box{
+    background:var(--warn-bg);
+    border:1px solid var(--warn-line);
+    border-radius:4px;
+    padding:24px 26px;
+    color:var(--warn-ink);
+  }
+  .warning-box h2{color:var(--warn-ink);}
+  .warning-box ul{margin:14px 0 0;padding-left:20px;}
+  .warning-box li{margin-bottom:7px;font-size:14.5px;}
+  .warning-box .liability-intro{margin:16px 0 6px;font-size:14.5px;}
+
+  /* ---------- Secret section ---------- */
+  .secret{
+    border:1px dashed var(--teal-mid);
+    border-radius:4px;
+    padding:24px 26px;
+    text-align:center;
+    background:repeating-linear-gradient(135deg, rgba(18,126,115,.05) 0 10px, transparent 10px 20px);
+  }
+  .secret h2{margin-bottom:6px;}
+  .secret .hint{font-size:13.5px;color:var(--teal-mid);margin:0 0 18px;font-family:'IBM Plex Mono',monospace;letter-spacing:.02em;}
+  button.reveal{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    letter-spacing:.05em;
+    background:var(--teal-deep);
+    color:#eafcf6;
+    border:none;
+    padding:13px 22px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  button.reveal:hover{background:var(--teal-mid);}
+  button.reveal:focus-visible{outline:3px solid var(--gold);outline-offset:2px;}
+
+  .note{
+    display:none;
+    margin-top:22px;
+    background:var(--note-bg);
+    color:var(--note-ink);
+    border-radius:4px;
+    padding:28px 26px 24px;
+    text-align:left;
+  }
+  .note.show{display:block;animation:fadeUp .5s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  .note p{
+    font-family:'Caveat',cursive;
+    font-size:23px;
+    line-height:1.45;
+    margin:0 0 12px;
+  }
+  .note p.sign{margin-top:16px;font-size:24px;}
+
+  /* ---------- Redeem / form ---------- */
+  .redeem{
+    background:var(--paper);
+    border:1px solid var(--paper-line);
+    border-radius:4px;
+    padding:26px;
+  }
+  .redeem-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:.05em;
+    display:inline-block;
+    padding:5px 11px;
+    border-radius:2px;
+    background:#f1e7d3;
+    color:#7a5a12;
+    margin-bottom:18px;
+  }
+  .redeem-status.done{background:#dcf1e6;color:var(--ok);}
+  form{display:grid;gap:18px;}
+  .field label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    letter-spacing:.06em;
+    color:var(--teal-mid);
+    margin-bottom:7px;
+  }
+  .field input[type=date],
+  .field input[type=text]{
+    width:100%;
+    font:inherit;
+    font-size:15px;
+    padding:10px 12px;
+    border:1px solid var(--paper-line);
+    border-radius:3px;
+    background:#fff;
+    color:var(--ink);
+  }
+  .choice-row{display:flex;flex-wrap:wrap;gap:10px;}
+  .choice-row label{
+    display:flex;align-items:center;gap:7px;
+    font-size:14.5px;
+    border:1px solid var(--paper-line);
+    padding:9px 13px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .choice-row input{accent-color:var(--teal-mid);}
+  button.submit{
+    justify-self:start;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    letter-spacing:.05em;
+    background:var(--teal-deep);
+    color:#eafcf6;
+    border:none;
+    padding:13px 24px;
+    border-radius:3px;
+    cursor:pointer;
+    margin-top:4px;
+  }
+  button.submit:hover{background:var(--teal-mid);}
+  .confirm-msg{
+    display:none;
+    margin-top:4px;
+    font-size:14.5px;
+    color:var(--ok);
+    font-weight:500;
+  }
+  .confirm-msg.show{display:block;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:40px;
+    padding:0 26px;
+    text-align:center;
+    color:#4a6b64;
+    font-size:12.5px;
+  }
+  footer .wave{
+    height:14px;
+    margin:0 auto 18px;
+    max-width:200px;
+    background:repeating-linear-gradient(115deg, var(--teal-line) 0 3px, transparent 3px 14px);
+    opacity:.5;
+  }
+  footer p{margin:3px 0;}
+
+  .no-holder{
+    text-align:center;
+    padding:40px 20px;
+  }
+  .no-holder .choice-row{justify-content:center;margin-top:16px;}
+  .no-holder a.pick{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    border:1px solid var(--teal-mid);
+    padding:10px 20px;
+    border-radius:3px;
+    color:var(--teal-deep);
+    text-decoration:none;
+  }
+  .no-holder a.pick:hover{background:var(--teal-line);color:#eafcf6;}
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="letterhead">
+    <div class="agency-mark">BUNDESAMT FÜR FAHRZEUGÄSTHETIK</div>
+    <h1>Digitale Lizenzprüfung</h1>
+    <p class="sub">Zentrale Stelle für Glanz- und Sauberkeitsangelegenheiten</p>
+    <span class="lp-tag" id="ticketTag">LIZENZ CD-2026-000</span>
+  </header>
+
+  <main id="app">
+    <!-- Inhalt wird per JavaScript befüllt, sobald der Inhaber feststeht -->
+  </main>
+
+  <footer>
+    <div class="wave"></div>
+    <p>© 2026 Bundesamt für Fahrzeugästhetik</p>
+    <p>Eine Einrichtung der Josh &amp; Co. Familienverwaltung</p>
+    <p>Diese Website dient ausschließlich der familiären Unterhaltung und besitzt keinerlei amtliche Gültigkeit.</p>
+  </footer>
+
+</div>
+
+<script>
+/* ============================================================
+   HIER ANPASSEN: Daten für Mama und Papa.
+   "kennzeichen" und "fahrzeug" bitte für beide korrekt eintragen,
+   bevor die QR-Codes final gedruckt werden.
+   ============================================================ */
+/* ============================================================
+   HIER ANPASSEN: Formspree-Endpoint eintragen, damit du bei
+   jeder Terminanfrage eine E-Mail bekommst.
+   1. Auf https://formspree.io kostenlos registrieren
+   2. "New Form" anlegen, deine Mail-Adresse bestätigen
+   3. Die Endpoint-URL (sieht aus wie
+      https://formspree.io/f/abcdwxyz) hier eintragen
+   Leer lassen ("") = Formular funktioniert weiterhin,
+   es wird nur keine Mail verschickt.
+   ============================================================ */
+const FORMSPREE_ENDPOINT = "";
+
+const HOLDERS = {
+  mama: {
+    name: "Mama",
+    lizenz: "CD-2026-001",
+    fahrzeug: "Audi A1 1.2 TFSI",
+    kennzeichen: "VIE-BB182",
+  },
+  papa: {
+    name: "Papa",
+    lizenz: "CD-2026-002",
+    fahrzeug: "TODO: Fahrzeug eintragen",
+    kennzeichen: "TODO: Kennzeichen eintragen",
+  }
+};
+
+function renderApp(holderKey){
+  const h = HOLDERS[holderKey];
+  document.getElementById('ticketTag').textContent = "LIZENZ " + h.lizenz;
+
+  document.getElementById('app').innerHTML = `
+    <section class="status-card">
+      <div class="seal">GOLD<br>PREMIUM</div>
+      <div class="status-line"><span class="status-dot"></span>LIZENZ GÜLTIG</div>
+      <dl class="facts">
+        <div><dt>LIZENZNUMMER</dt><dd>${h.lizenz}</dd></div>
+        <div><dt>INHABER</dt><dd>${h.name}</dd></div>
+        <div><dt>FAHRZEUG</dt><dd>${h.fahrzeug}</dd></div>
+        <div><dt>KENNZEICHEN</dt><dd>${h.kennzeichen}</dd></div>
+        <div><dt>FAHRZEUGSTATUS</dt><dd>Aufbereitungsbedürftig</dd></div>
+        <div><dt>BERECHTIGUNGSSTUFE</dt><dd>PREMIUM</dd></div>
+        <div class="full"><dt>ANZAHL GENEHMIGTER BEHANDLUNGEN</dt><dd>1</dd></div>
+      </dl>
+    </section>
+
+    <section class="decree">
+      <h2>Amtlicher Beschluss</h2>
+      <p class="lead">Hiermit wird der oben genannten Person offiziell die einmalige Inanspruchnahme einer Premium Car-Detailing-Maßnahme genehmigt. Die Maßnahme beinhaltet:</p>
+      <ul class="checklist">
+        <li>Außenwäsche</li>
+        <li>Felgenreinigung</li>
+        <li>Tiefenreinigung des Innenraums</li>
+        <li>Reinigung sämtlicher relevanter Oberflächen</li>
+        <li>Entfernung von Staub, Dreck und sonstigen unerwünschten Erscheinungen</li>
+        <li>Abschließende Glanzkontrolle</li>
+      </ul>
+      <div class="authority">
+        Durchführende Behörde:
+        <span class="role">Josh — Abteilung für familiäre Fahrzeugverschönerung</span>
+      </div>
+    </section>
+
+    <section class="warning-box">
+      <h2>⚠️ Wichtige Hinweise</h2>
+      <ul>
+        <li>Der Fahrzeughalter ist während der Durchführung nicht verpflichtet, aktiv mitzuwirken. Schlüssel übergeben reicht.</li>
+        <li>Eine erneute Verschmutzung nach erfolgreicher Behandlung stellt keinen Reklamationsgrund dar.</li>
+      </ul>
+      <p class="liability-intro">Die Behörde übernimmt keine Haftung für:</p>
+      <ul>
+        <li>übermäßiges Betrachten des eigenen Fahrzeugs</li>
+        <li>spontane Fotografie</li>
+        <li>erhöhtes Selbstwertgefühl des Fahrzeughalters</li>
+        <li>Aussagen wie „Boah, der sieht ja aus wie neu!"</li>
+        <li>den möglicherweise entstehenden Wunsch, das Auto nie wieder zu fahren</li>
+      </ul>
+    </section>
+
+    <section class="secret">
+      <h2>🔐 Geheime Information</h2>
+      <p class="hint">Nur für den autorisierten Fahrzeughalter sichtbar.</p>
+      <button class="reveal" id="revealBtn" aria-expanded="false">🔓 Weitere Informationen anzeigen</button>
+      <div class="note" id="noteBox">
+        <p>Okay, jetzt mal ohne Behördenquatsch.&nbsp;❤️</p>
+        <p>Ihr macht diesen Tag jedes Jahr zu etwas Besonderem für unsere Familie.</p>
+        <p>Dieses Jahr ist wegen der Hochzeit natürlich alles ein bisschen anders — deshalb gibt es ausnahmsweise kein riesiges Geschenk.</p>
+        <p>Aber ich wollte euch trotzdem eine Kleinigkeit schenken, die von mir kommt und die wir gemeinsam machen können.</p>
+        <p>Danke für alles.&nbsp;❤️</p>
+        <p class="sign">Euer Josh</p>
+      </div>
+    </section>
+
+    <section class="redeem">
+      <h2>📅 Einlösung</h2>
+      <span class="redeem-status" id="redeemStatus">STATUS: NICHT EINGELÖST</span>
+      <form id="redeemForm">
+        <div class="field">
+          <label for="datum">Gewünschter Termin</label>
+          <input type="date" id="datum" name="datum">
+        </div>
+        <div class="field">
+          <label>Zustand des Fahrzeugs</label>
+          <div class="choice-row">
+            <label><input type="radio" name="zustand" value="leicht" checked> leicht verschmutzt</label>
+            <label><input type="radio" name="zustand" value="stark"> stark verschmutzt</label>
+            <label><input type="radio" name="zustand" value="geheim"> Zustand wird aus Gründen des Selbstschutzes nicht angegeben</label>
+          </div>
+        </div>
+        <button type="submit" class="submit">Termin beantragen</button>
+        <p class="confirm-msg" id="confirmMsg"></p>
+      </form>
+    </section>
+  `;
+
+  document.getElementById('revealBtn').addEventListener('click', function(){
+    const note = document.getElementById('noteBox');
+    const expanded = this.getAttribute('aria-expanded') === 'true';
+    note.classList.toggle('show', !expanded);
+    this.setAttribute('aria-expanded', String(!expanded));
+    this.textContent = expanded ? '🔓 Weitere Informationen anzeigen' : '🔒 Informationen ausblenden';
+    if(!expanded){ note.scrollIntoView({behavior:'smooth', block:'center'}); }
+  });
+
+  document.getElementById('redeemForm').addEventListener('submit', function(e){
+    e.preventDefault();
+
+    const datum = document.getElementById('datum').value;
+    const zustand = this.querySelector('input[name="zustand"]:checked').value;
+    const zustandLabel = {
+      leicht: 'leicht verschmutzt',
+      stark: 'stark verschmutzt',
+      geheim: 'Zustand wird aus Gründen des Selbstschutzes nicht angegeben'
+    }[zustand];
+
+    // Terminanfrage per Mail zustellen, sofern ein Formspree-Endpoint hinterlegt ist
+    if (FORMSPREE_ENDPOINT) {
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new URLSearchParams({
+          _subject: 'Terminanfrage: ' + h.name + ' (' + h.lizenz + ')',
+          inhaber: h.name,
+          lizenz: h.lizenz,
+          fahrzeug: h.fahrzeug + ' — ' + h.kennzeichen,
+          gewuenschter_termin: datum || '(kein Datum angegeben)',
+          zustand: zustandLabel
+        })
+      }).catch(function(){ /* Netzwerkfehler still ignorieren, UI zeigt trotzdem Erfolg */ });
+    }
+
+    document.getElementById('redeemStatus').textContent = 'STATUS: TERMIN BEANTRAGT';
+    document.getElementById('redeemStatus').classList.add('done');
+    const msg = document.getElementById('confirmMsg');
+    msg.textContent = 'Antrag eingegangen. Die zuständige Behörde (Josh) meldet sich zeitnah — vermutlich persönlich, nicht per Amtsschreiben.';
+    msg.classList.add('show');
+  });
+}
+
+function init(){
+  const params = new URLSearchParams(window.location.search);
+  const holder = (params.get('inhaber') || '').toLowerCase();
+
+  if(HOLDERS[holder]){
+    renderApp(holder);
+  } else {
+    document.getElementById('app').innerHTML = `
+      <div class="no-holder">
+        <h2>Kein Inhaber angegeben</h2>
+        <p>Bitte über den Link auf dem jeweiligen Gutschein aufrufen, oder direkt auswählen:</p>
+        <div class="choice-row">
+          <a class="pick" href="?inhaber=mama">Für Mama</a>
+          <a class="pick" href="?inhaber=papa">Für Papa</a>
+        </div>
+      </div>`;
+  }
+}
+init();
+</script>
+
+</body>
+</html>
